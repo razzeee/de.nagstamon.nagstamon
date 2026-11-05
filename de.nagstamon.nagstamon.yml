@@ -31,12 +31,15 @@ modules:
     cleanup: ['*']
     sources:
       - type: archive
-        url: https://gitlab.freedesktop.org/dbus/dbus/-/archive/dbus-1.14.10/dbus-dbus-1.14.10.tar.gz
-        sha256: 5fedcd6c17fbc62646af224e1aab11a334c463e7e7d89163a670ed24e7ab241c
+        url: https://dbus.freedesktop.org/releases/dbus/dbus-1.14.10.tar.xz
+        sha256: ba1f21d2bd9d339da2d4aa8780c09df32fea87998b73da24f49ab9df1e36a50f
         x-checker-data:
           type: anitya
           project-id: 5356
-          url-template: https://gitlab.freedesktop.org/dbus/dbus/-/archive/dbus-$version/dbus-dbus-$version.tar.g00z
+          # Newer release lines require migrating the module away from Autotools.
+          versions:
+            <: '1.15'
+          url-template: https://dbus.freedesktop.org/releases/dbus/dbus-$version.tar.xz
 
   - name: dbus-python
     buildsystem: autotools
@@ -45,9 +48,13 @@ modules:
         url: https://dbus.freedesktop.org/releases/dbus-python/dbus-python-1.3.2.tar.gz
         sha256: ad67819308618b5069537be237f8e68ca1c7fcc95ee4a121fe6845b1418248f8
         x-checker-data:
-          type: anitya
-          project-id: 402
-          url-template: https://dbus.freedesktop.org/releases/dbus-python/dbus-python-$version.tar.gz
+          type: html
+          url: https://dbus.freedesktop.org/releases/dbus-python/
+          pattern: 'href="(dbus[-_]python-([0-9]+(?:\.[0-9]+)+)\.tar\.(?:gz|xz))"'
+          # 1.4 drops generated configure; 1.5 removes Autotools entirely.
+          # Lift this bound as part of a separate build-system migration.
+          versions:
+            <: '1.4'
 
   # MIT Kerberos for gssapi Python package
   # Note: Using 1.22 from GitHub mirror (kerberos.org is unreliable, 1.21.3 has build issues)
@@ -73,7 +80,7 @@ modules:
         x-checker-data:
           type: anitya
           project-id: 13287
-          url-template: https://github.com/krb5/krb5/archive/refs/tags/krb5-$version-final.tar.gz
+          url-template: https://github.com/krb5/krb5/archive/refs/tags/krb5-$version.tar.gz
 
   # external python modules
   - python-modules.yml
@@ -96,4 +103,3 @@ modules:
         sha256: 15340ccbf8217f43e773f62793411114b998850b1eff6954c318255980e52899
       - type: file
         path: nagstamon.sh
-
